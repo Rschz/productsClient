@@ -1,21 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { ProductsService } from 'src/app/products.service';
 
 const GET_PRODUCTS = gql`
   {
-    __schema {
-      mutationType {
-        name
-        fields {
-          name
-          args {
-            name
-          }
-        }
-      }
+    products {
+      id
+      category
+      description
     }
   }
 `;
@@ -26,12 +18,11 @@ const GET_PRODUCTS = gql`
   styleUrls: ['./aside-list.component.css'],
 })
 export class AsideListComponent implements OnInit {
-  categories: any = [];
+  products: any = [];
+  productId: number = 0;
+  showBtnNewAdd: boolean = true;
 
-  constructor(
-    private apollo: Apollo,
-    private productsService: ProductsService
-  ) {}
+  constructor(private apollo: Apollo, private router: Router) {}
 
   ngOnInit(): void {
     this.apollo
@@ -39,12 +30,16 @@ export class AsideListComponent implements OnInit {
         query: GET_PRODUCTS,
       })
       .valueChanges.subscribe(({ data, loading }) => {
-        console.log(loading);
-
-        const fields = data.__schema.mutationType.fields;
-        this.categories = [
-          ...new Set(fields.map((element: any) => element.args[0].name)),
-        ];
+        let { products } = data;
+        this.products = products;
       });
+  }
+
+  showId() {
+    console.log();
+  }
+
+  removebtn() {
+    this.showBtnNewAdd = false;
   }
 }
